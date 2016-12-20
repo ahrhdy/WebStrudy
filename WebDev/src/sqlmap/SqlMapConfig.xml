@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+  	<settings useStatementNamespaces="true" />
+
+	<sqlMap resource="sqlmap/sample/Aut.xml" />
+	<sqlMap resource="sqlmap/sample/Brd.xml" />
+	<sqlMap resource="sqlmap/sample/Cde.xml" />
+	<sqlMap resource="sqlmap/sample/Cht.xml" />
+	<sqlMap resource="sqlmap/sample/Emp.xml" />
+	<sqlMap resource="sqlmap/sample/Err.xml" />
+	<sqlMap resource="sqlmap/sample/Hlp.xml" />
+	<sqlMap resource="sqlmap/sample/Lnt.xml" />
+	<sqlMap resource="sqlmap/sample/Log.xml" />
+	<sqlMap resource="sqlmap/sample/Pgm.xml" />
+	<sqlMap resource="sqlmap/sample/Smp.xml" />
+	<sqlMap resource="sqlmap/sample/Srv.xml" />
+	<sqlMap resource="sqlmap/sample/Ufm.xml" />
+	
+</sqlMapConfig>

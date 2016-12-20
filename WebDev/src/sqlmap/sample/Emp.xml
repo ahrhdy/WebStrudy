@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="emp">
+	
+	<sql id="selEmpWhere">
+		<isNotEmpty property="USER_NAME" prepend="AND">
+			a.USER_NAME LIKE CONCAT('%',#USER_NAME#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="USER_ID" prepend="AND">
+			a.USER_ID LIKE CONCAT('%',#USER_ID#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="USER_KINDCD" prepend="AND">
+			a.USER_KINDCD = #USER_KINDCD#
+		</isNotEmpty>
+		<isNotEmpty property="MOBILE" prepend="AND">
+			a.MOBILE = #MOBILE#
+		</isNotEmpty>				
+	</sql>	
+	
+	<select id="selEmpPaging" resultClass="HashMap">
+	SELECT a.USER_ID, 
+	       a.USER_NAME, 
+	       a.USER_PW, 
+	       a.MOBILE, 
+	       a.TEL, 
+	       a.EMAIL, 
+	       a.POST, 
+	       a.ADDR1, 
+	       a.ADDR2, 
+	       a.USE_YN, 
+	       a.USER_KINDCD, 
+	       DATE_FORMAT(INS_DATE, '%Y-%m-%d') AS INS_DATE,
+	       a.INS_ID 
+	  FROM temp01 a
+	  WHERE 1=1
+	  <include refid="selEmpWhere"/>
+	</select>
+	
+	<select id="selEmpPagingCount" resultClass="Integer">
+		SELECT count(*) 
+		  FROM temp01 a
+		 WHERE 1=1
+		<include refid="selEmpWhere"/>
+	</select>
+	
+	<select id="selEmpList" resultClass="HashMap">
+	SELECT a.USER_ID, 
+	       a.USER_NAME, 
+	       a.USER_PW, 
+	       a.MOBILE, 
+	       a.TEL, 
+	       a.EMAIL, 
+	       a.POST, 
+	       a.ADDR1, 
+	       a.ADDR2, 
+	       a.USE_YN, 
+	       a.USER_KINDCD, 
+	       DATE_FORMAT(a.INS_DATE, '%Y-%m-%d') AS INS_DATE,
+	       a.INS_ID 
+	  FROM temp01 a
+	  WHERE 1=1
+	  <include refid="selEmpWhere"/>
+	</select>
+	
+	<select id="selEmpExist" resultClass="Integer">
+	SELECT count(*)
+	  FROM temp01 a
+	  WHERE a.USER_ID = #USER_ID#
+	</select>
+	
+	<select id="selEmpDetail" resultClass="HashMap">
+	SELECT a.USER_ID, 
+	       a.USER_NAME, 
+	       a.USER_PW, 
+	       a.MOBILE, 
+	       a.TEL, 
+	       a.EMAIL, 
+	       a.POST, 
+	       a.ADDR1, 
+	       a.ADDR2, 
+	       a.USE_YN, 
+	       a.USER_KINDCD, 
+	       DATE_FORMAT(a.INS_DATE, '%Y-%m-%d') AS INS_DATE,
+	       a.INS_ID 
+	  FROM temp01 a
+	  WHERE 1=1
+	  AND USER_ID = #USER_ID#
+	  AND USER_PW = #USER_PW#
+	</select>	
+	
+	<insert id="insEmp" parameterClass="Map">
+	INSERT 
+	  INTO temp01 
+	       ( 
+				USER_ID, 
+				USER_NAME, 
+				USER_PW, 
+				MOBILE, 
+				TEL, 
+				EMAIL, 
+				POST, 
+				ADDR1, 
+				ADDR2, 
+				USE_YN, 
+				USER_KINDCD, 
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #USER_ID#, 
+	           #USER_NAME#, 
+	           #USER_PW#, 
+	           #MOBILE#, 
+	           #TEL#, 
+	           #EMAIL#, 
+	           #POST#, 
+	           #ADDR1#, 
+	           #ADDR2#, 
+	           #USE_YN#,
+	           #USER_KINDCD#,
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>
+	
+	<update id="updEmp" parameterClass="Map">
+	UPDATE temp01 
+	       SET
+	       <isNotNull removeFirstPrepend="true">
+		       <isNotEmpty property="USER_NAME" prepend=",">
+		       	USER_NAME = #USER_NAME#
+		       </isNotEmpty> 
+		       <isNotEmpty property="USER_PW" prepend=",">
+		        USER_PW = #USER_PW#
+		       </isNotEmpty>
+		       <isNotEmpty property="MOBILE" prepend=",">
+		        MOBILE = #MOBILE#
+		       </isNotEmpty>
+		       <isNotEmpty property="TEL" prepend=",">
+		        TEL = #TEL#
+		       </isNotEmpty>
+		       <isNotEmpty property="EMAIL" prepend=",">
+		        EMAIL = #EMAIL#
+		       </isNotEmpty>
+		       <isNotEmpty property="POST" prepend=",">
+		        POST = #POST#
+		       </isNotEmpty>
+		       <isNotEmpty property="ADDR1" prepend=",">
+		        ADDR1 = #ADDR1#
+		       </isNotEmpty>
+		       <isNotEmpty property="ADDR2" prepend=",">
+		        ADDR2 = #ADDR2#
+		       </isNotEmpty>
+		       <isNotEmpty property="USE_YN" prepend=",">
+		        USE_YN = #USE_YN#
+		       </isNotEmpty>
+		       <isNotEmpty property="USER_KINDCD" prepend=",">
+		        USER_KINDCD = #USER_KINDCD#
+		       </isNotEmpty>				
+	       </isNotNull>
+	 WHERE USER_ID = #USER_ID# 		
+	</update>
+	
+	<delete id="delEmp" parameterClass="Map">
+		DELETE FROM temp01 WHERE USER_ID = #USER_ID#
+	</delete>
+
+</sqlMap>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="srv">
+
+	<select id="selSrvList" resultClass="HashMap">
+		SELECT SRV_SEQ,
+		       SRV_NAME,
+		       USE_YN,
+		       VW_ST_DAY,
+		       VW_ED_DAY,
+		       DATE_FORMAT(INS_DATE, '%Y-%m-%d') AS INS_DATE,
+		       INS_ID
+		  FROM tsrv01
+		  WHERE 1=1		  
+	</select>
+	
+	<select id="selSrv02List" resultClass="HashMap">
+		SELECT QUE_SER,
+		       SRV_SEQ,
+		       SRV_KINDCD,
+		       office.getCodeValue('CD006', SRV_KINDCD)AS SRV_KINDCD_NM,
+		       SRV_CONTENTS,
+		       DATE_FORMAT(INS_DATE, '%Y-%m-%d') AS INS_DATE,
+		       INS_ID
+		  FROM tsrv02
+		  WHERE 1=1	
+		  AND SRV_SEQ = #SRV_SEQ#
+	</select>
+	
+	<select id="selSrv03List" resultClass="HashMap">
+		SELECT QUE_SEQ,
+		       QUE_SER,
+		       SRV_SEQ,
+		       QUE_CONTENTS,
+		       DATE_FORMAT(INS_DATE, '%Y-%m-%d') AS INS_DATE,
+		       INS_ID
+		  FROM tsrv03
+		  WHERE 1=1
+		  AND SRV_SEQ = #SRV_SEQ#
+		  AND QUE_SER = #QUE_SER#  
+	</select>
+	
+	<insert id="insSrv01" parameterClass="Map">
+	INSERT 
+	  INTO tsrv01 
+	       ( 
+				SRV_NAME, 
+				USE_YN,
+				VW_ST_DAY,
+				VW_ED_DAY,
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #SRV_NAME#, 
+	           #USE_YN#,
+	           #VW_ST_DAY#,
+	           #VW_ED_DAY#,
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>
+	
+	<insert id="insSrv02" parameterClass="Map">
+	INSERT 
+	  INTO tsrv02 
+	       ( 
+				SRV_SEQ, 
+				SRV_KINDCD,
+				SRV_CONTENTS,
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #SRV_SEQ#, 
+	           #SRV_KINDCD#,
+	           #SRV_CONTENTS#,
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>
+	
+	<insert id="insSrv03" parameterClass="Map">
+	INSERT 
+	  INTO tsrv03 
+	       ( 
+				QUE_SER, 
+				SRV_SEQ,
+				QUE_CONTENTS,
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #QUE_SER#, 
+	           #SRV_SEQ#,
+	           #QUE_CONTENTS#,
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>
+	
+	<update id="updSrv01" parameterClass="Map">
+	UPDATE tsrv01 
+	       SET
+		   SRV_NAME = #SRV_NAME#
+	       ,USE_YN = #USE_YN#
+	       ,VW_ST_DAY = #VW_ST_DAY#
+	       ,VW_ED_DAY = #VW_ED_DAY#
+	 WHERE SRV_SEQ = #SRV_SEQ# 		
+	</update>
+	
+	<update id="updSrv02" parameterClass="Map">
+	UPDATE tsrv02 
+	       SET
+		   SRV_KINDCD = #SRV_KINDCD#
+	       ,SRV_CONTENTS = #SRV_CONTENTS#
+	 WHERE SRV_SEQ = #SRV_SEQ#
+	 AND QUE_SER = #QUE_SER#
+	</update>
+
+	<update id="updSrv03" parameterClass="Map">
+	UPDATE tsrv03 
+	       SET
+		   QUE_CONTENTS = #QUE_CONTENTS#
+	 WHERE SRV_SEQ = #SRV_SEQ#
+	 AND QUE_SER = #QUE_SER#
+	 AND QUE_SEQ = #QUE_SEQ# 		
+	</update>		
+	
+	<delete id="delSrv01" parameterClass="Map">
+		DELETE FROM tsrv01
+	</delete>
+	<delete id="delSrv02" parameterClass="Map">
+		DELETE FROM tsrv02
+	</delete>
+	
+	<delete id="delSrv03" parameterClass="Map">
+		DELETE FROM tsrv03
+	</delete>	
+
+</sqlMap>

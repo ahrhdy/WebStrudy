@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="aut">
+
+	<select id="selEmpList" resultClass="HashMap">
+	SELECT a.USER_ID, 
+	       a.USER_NAME, 
+	       a.USER_PW, 
+	       a.MOBILE, 
+	       a.TEL, 
+	       a.EMAIL, 
+	       a.POST, 
+	       a.ADDR1, 
+	       a.ADDR2, 
+	       a.USE_YN, 
+	       a.USER_KINDCD, 
+	       DATE_FORMAT(a.INS_DATE, '%Y-%m-%d') AS INS_DATE,
+	       a.INS_ID 
+	  FROM temp01 a
+	  WHERE 1=1
+	<isNotEmpty property="USER_NAME" prepend="AND">
+		a.USER_NAME LIKE CONCAT('%',#USER_NAME#,'%')
+	</isNotEmpty>
+	<isNotEmpty property="USER_ID" prepend="AND">
+		a.USER_ID LIKE CONCAT('%',#USER_ID#,'%')
+	</isNotEmpty>
+	<isNotEmpty property="USER_KINDCD" prepend="AND">
+		a.USER_KINDCD = #USER_KINDCD#
+	</isNotEmpty>	  
+	</select>
+	
+	<select id="selAutList" resultClass="HashMap">
+	SELECT b.USER_ID, 
+	       a.PGM_ID,
+	       a.PGM_NAME,
+	       CASE WHEN ifnull(b.USER_ID,'N') = 'N' THEN 'N'
+	       ELSE 'Y' END PGM_YN
+	  FROM tpgm01 a LEFT OUTER JOIN 
+	  (
+	  	 SELECT * FROM taut01 where USER_ID = #USER_ID#
+	  ) b	  
+	  ON a.PGM_ID = b.PGM_ID
+	  WHERE 1=1	  
+	</select>
+	
+	<select id="selUserAutList" resultClass="HashMap">
+	SELECT b.USER_ID, 
+	       a.PGM_ID,
+	       a.PGM_NAME,
+	       a.PGM_URL
+	  FROM tpgm01 a INNER JOIN 
+	  (
+	  	 SELECT * FROM taut01 where USER_ID = #SS_USER_ID#
+	  ) b	  
+	  ON a.PGM_ID = b.PGM_ID
+	  WHERE 1=1
+	  AND a.USE_YN = 'Y'
+	</select>	
+	
+	<insert id="insAut" parameterClass="Map">
+	INSERT 
+	  INTO taut01 
+	       ( 
+				PGM_ID, 
+				USER_ID, 
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #PGM_ID#, 
+	           #USER_ID#, 
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>
+	
+	<delete id="delAut" parameterClass="Map">
+		DELETE FROM taut01 WHERE USER_ID = #USER_ID#
+	</delete>			
+
+</sqlMap>

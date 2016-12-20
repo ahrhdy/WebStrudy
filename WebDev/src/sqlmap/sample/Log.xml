@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="log">
+
+	<select id="selLogList" resultClass="HashMap">
+		SELECT DATE_FORMAT(a.SCHEDULE_DATE, '%Y-%m-%d %H:%i:%s') AS SCHEDULE_DATE, 
+		       a.SCHEDULE_MSG     
+		  FROM tlog01 a
+		  WHERE 1=1  
+	</select>	
+	
+	<insert id="insLog" parameterClass="java.lang.String">
+	INSERT 
+	  INTO tlog01 
+	       ( 
+				SCHEDULE_DATE,
+				SCHEDULE_MSG
+	       ) 
+	       VALUES 
+	       ( 
+	           now(),
+	           #SCHEDULE_MSG# 
+	       ) 	
+	</insert>
+	
+	<delete id="delLog" parameterClass="Map">
+		DELETE FROM tlog01
+	</delete>				
+
+</sqlMap>

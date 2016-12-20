@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="smp">
+	
+	<select id="selSampleList" resultClass="HashMap">
+	SELECT a.SAMPLE_NAME, 
+	       a.URL, 
+	       a.SOURCE
+	  FROM tsample a
+	  WHERE 1=1
+	</select>
+	
+	<select id="selSampleDetail" resultClass="HashMap">
+	SELECT a.SAMPLE_NAME, 
+	       a.URL, 
+	       a.SOURCE
+	  FROM tsample a
+	  WHERE 1=1
+	  AND a.URL = #URL#
+	</select>	
+	
+	<insert id="insSample" parameterClass="Map">
+	INSERT 
+	  INTO tsample 
+	       ( 
+				SAMPLE_NAME, 
+				URL, 
+				SOURCE
+	       ) 
+	       VALUES 
+	       ( 
+	           #SAMPLE_NAME#, 
+	           #URL#, 
+	           #SOURCE#
+	       ) 	
+	</insert>
+	
+	<update id="updSample" parameterClass="Map">
+	UPDATE tsample 
+	       SET
+	       <isNotNull removeFirstPrepend="true">
+		       <isNotEmpty property="SAMPLE_NAME" prepend=",">
+		       	SAMPLE_NAME = #SAMPLE_NAME#
+		       </isNotEmpty> 
+		       <isNotEmpty property="URL" prepend=",">
+		        URL = #URL#
+		       </isNotEmpty>
+		       <isNotEmpty property="SOURCE" prepend=",">
+		        SOURCE = #SOURCE#
+		       </isNotEmpty>		       
+	       </isNotNull>
+	 WHERE URL = #URL# 		
+	</update>
+	
+	<delete id="delEmp" parameterClass="Map">
+		DELETE FROM tsample WHERE URL = #URL#
+	</delete>
+
+</sqlMap>

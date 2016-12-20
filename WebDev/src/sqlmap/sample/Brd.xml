@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="brd">
+
+	<sql id="selBrdWhere">
+		<isNotEmpty property="BRD_SUBJECT" prepend="AND">
+			a.BRD_SUBJECT LIKE CONCAT('%',#BRD_SUBJECT#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="BRD_CONTENTS" prepend="AND">
+			a.BRD_CONTENTS LIKE CONCAT('%',#BRD_CONTENTS#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="INS_ID" prepend="AND">
+			a.INS_ID LIKE CONCAT('%',#INS_ID#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="BRD_KINDCD" prepend="AND">
+			a.BRD_KINDCD = #BRD_KINDCD#
+		</isNotEmpty>		
+	</sql>	
+	
+	<select id="selBrdPaging" resultClass="HashMap">
+	SELECT a.BRD_SEQ,
+	       a.BRD_KINDCD, 
+	       a.BRD_SUBJECT, 
+	       a.BRD_CONTENTS, 
+	       a.USE_YN, 
+	       DATE_FORMAT(a.INS_DATE, '%Y-%m-%d %H:%i:%s') AS INS_DATE,
+	       a.INS_ID,
+	       b.BRD_KINDCD,
+	       office.getCodeValue('CD003',b.BRD_KINDCD) AS BRD_KINDCD_NM
+	  FROM tbrd01 a INNER JOIN tbrd04 b
+	  ON a.BRD_KINDCD = b.BRD_KINDCD
+	  WHERE 1=1
+	  <include refid="selBrdWhere"/>
+	</select>
+	
+	<select id="selBrdPagingCount" resultClass="Integer">
+		SELECT count(*) 
+		  FROM tbrd01 a INNER JOIN tbrd04 b
+		  ON a.BRD_KINDCD = b.BRD_KINDCD
+		 WHERE 1=1
+		<include refid="selBrdWhere"/>
+	</select>
+	
+	<select id="selBrdDetail" resultClass="HashMap">
+	SELECT a.BRD_SEQ,
+	       a.BRD_KINDCD, 
+	       a.BRD_SUBJECT, 
+	       a.BRD_CONTENTS, 
+	       a.USE_YN, 
+	       DATE_FORMAT(a.INS_DATE, '%Y-%m-%d %H:%i:%s') AS INS_DATE,
+	       a.INS_ID,
+	       b.BRD_KINDCD,
+	       office.getCodeValue('CD003',b.BRD_KINDCD) AS BRD_KINDCD_NM
+	  FROM tbrd01 a INNER JOIN tbrd04 b
+	  ON a.BRD_KINDCD = b.BRD_KINDCD
+	  WHERE 1=1
+	  AND a.BRD_SEQ = #BRD_SEQ#
+	</select>	
+	
+	<select id="selBrdAttachList" resultClass="HashMap">
+	SELECT a.FM_SEQ, 
+	       a.BRD_SEQ, 
+	       a.FILE_UUID, 
+	       DATE_FORMAT(a.INS_DATE, '%Y-%m-%d %H:%i:%s') AS INS_DATE,
+	       a.INS_ID,
+	       b.FILE_ORI_NAME 
+	  FROM tbrd02 a INNER JOIN tufm01 b
+	  ON a.FILE_UUID = b.FILE_UUID
+	  WHERE 1=1
+	  AND a.BRD_SEQ = #BRD_SEQ#
+	</select>	
+	
+	<select id="selBrdReplyList" resultClass="HashMap">
+	SELECT a.RP_SEQ, 
+	       a.BRD_SEQ, 
+	       a.RP_CONTENTS, 
+	       a.USE_YN, 
+	       DATE_FORMAT(a.INS_DATE, '%Y-%m-%d %H:%i:%s') AS INS_DATE,
+	       a.INS_ID,
+	       office.getCodeValue('CD003',b.BRD_KINDCD) AS BRD_KINDCD_NM
+	  FROM tbrd03 a INNER JOIN tbrd01 b
+	  ON a.BRD_SEQ = b.BRD_SEQ
+	  WHERE 1=1
+	  <isNotEmpty property="BRD_SEQ" prepend="AND">
+	  a.BRD_SEQ = #BRD_SEQ#
+	  </isNotEmpty>
+	  <isNotEmpty property="BRD_KINDCD" prepend="AND">
+	  b.BRD_KINDCD = #BRD_KINDCD#
+	  </isNotEmpty>
+	  <isNotEmpty property="RP_CONTENTS" prepend="AND">
+	  a.RP_CONTENTS LIKE CONCAT('%',#RP_CONTENTS#,'%')
+	  </isNotEmpty>
+	  
+	</select>	
+	
+	<insert id="insBrd01" parameterClass="Map">
+	INSERT 
+	  INTO tbrd01 
+	       ( 
+				BRD_KINDCD, 
+				BRD_SUBJECT, 
+				BRD_CONTENTS, 
+				USE_YN, 
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #BRD_KINDCD#, 
+	           #BRD_SUBJECT#, 
+	           #BRD_CONTENTS#, 
+	           #USE_YN#,
+	           now(),
+	           #SS_USER_ID# 
+	       )
+	       <selectKey keyProperty="BRD_SEQ" resultClass="Integer">
+	       	SELECT LAST_INSERT_ID()
+	       </selectKey>
+	</insert>
+	
+	<update id="updBrd01" parameterClass="Map">
+	UPDATE tbrd01 
+	       SET
+	       <isNotNull removeFirstPrepend="true">
+		       <isNotEmpty property="BRD_KINDCD" prepend=",">
+		        BRD_KINDCD = #BRD_KINDCD#
+		       </isNotEmpty>	       
+		       <isNotEmpty property="USE_YN" prepend=",">
+		        USE_YN = #USE_YN#
+		       </isNotEmpty>
+		       <isNotEmpty property="BRD_SUBJECT" prepend=",">
+		        BRD_SUBJECT = #BRD_SUBJECT#
+		       </isNotEmpty>
+		       <isNotEmpty property="BRD_CONTENTS" prepend=",">
+		        BRD_CONTENTS = #BRD_CONTENTS#
+		       </isNotEmpty>
+	       </isNotNull>
+	 WHERE BRD_SEQ = #BRD_SEQ# 		
+	</update>
+	
+	<delete id="delBrd01" parameterClass="Map">
+		DELETE FROM tbrd01 WHERE BRD_SEQ = #BRD_SEQ#
+	</delete>
+	
+	<select id="selBrdKindList" resultClass="HashMap">
+	SELECT a.USE_YN,
+	       a.BRD_KINDCD,
+	       office.getCodeValue('CD003', a.BRD_KINDCD) AS BRD_KINDCD_NM,
+	       a.BRD_AUTH_KINDCD,
+	       office.getCodeValue('CD004', a.BRD_AUTH_KINDCD) AS BRD_AUTH_KINDCD_NM,
+	       a.BRD_DISP_KINDCD,
+	       office.getCodeValue('CD005', a.BRD_DISP_KINDCD) AS BRD_DISP_KINDCD_NM,
+	       DATE_FORMAT(a.INS_DATE, '%Y-%m-%d %H:%i:%s') AS INS_DATE,
+	       a.FILE_ATTACH_YN,
+	       a.FILE_ATTACH_CNT,
+	       a.INS_ID	       
+	  FROM tbrd04 a
+	  WHERE 1=1	
+	</select>
+	
+	<select id="selBrdKindExist" resultClass="Integer">
+	SELECT count(*)
+	  FROM tbrd04 a
+	  WHERE a.BRD_KINDCD = #BRD_KINDCD#
+	</select>	
+	
+	<insert id="insBrd04" parameterClass="Map">
+	INSERT 
+	  INTO tbrd04 
+	       ( 
+				BRD_KINDCD, 
+				BRD_AUTH_KINDCD,
+				BRD_DISP_KINDCD,
+				FILE_ATTACH_YN,
+				FILE_ATTACH_CNT,
+				USE_YN,
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #BRD_KINDCD#, 
+	           #BRD_AUTH_KINDCD#,
+	           #BRD_DISP_KINDCD#,
+	           #FILE_ATTACH_YN#,
+	           #FILE_ATTACH_CNT#,
+	           #USE_YN#,
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>
+	
+	<update id="updBrd04" parameterClass="Map">
+	UPDATE tbrd04 
+	       SET
+	       <isNotNull removeFirstPrepend="true">
+		       <isNotEmpty property="USE_YN" prepend=",">
+		        USE_YN = #USE_YN#
+		       </isNotEmpty>
+		       <isNotEmpty property="BRD_KINDCD" prepend=",">
+		        BRD_KINDCD = #BRD_KINDCD#
+		       </isNotEmpty>
+		       <isNotEmpty property="BRD_AUTH_KINDCD" prepend=",">
+		        BRD_AUTH_KINDCD = #BRD_AUTH_KINDCD#
+		       </isNotEmpty>
+		       <isNotEmpty property="BRD_DISP_KINDCD" prepend=",">
+		        BRD_DISP_KINDCD = #BRD_DISP_KINDCD#
+		       </isNotEmpty>
+		       <isNotEmpty property="FILE_ATTACH_YN" prepend=",">
+		        FILE_ATTACH_YN = #FILE_ATTACH_YN#
+		       </isNotEmpty>
+		       <isNotEmpty property="FILE_ATTACH_CNT" prepend=",">
+		        FILE_ATTACH_CNT = #FILE_ATTACH_CNT#
+		       </isNotEmpty>
+	       </isNotNull>
+	 WHERE BRD_KINDCD = #BRD_KINDCD# 		
+	</update>	
+	
+	<delete id="delBrd04" parameterClass="Map">
+		DELETE FROM tbrd04 WHERE BRD_KINDCD = #BRD_KINDCD#
+	</delete>
+	
+	<insert id="insBrd03" parameterClass="Map">
+	INSERT 
+	  INTO tbrd03 
+	       ( 
+				BRD_SEQ, 
+				RP_CONTENTS,
+				USE_YN,
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #BRD_SEQ#, 
+	           #RP_CONTENTS#,
+	           #USE_YN#,
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>
+	
+	<update id="updBrd03" parameterClass="Map">
+	UPDATE tbrd03 
+	       SET
+	       <isNotNull removeFirstPrepend="true">
+		       <isNotEmpty property="USE_YN" prepend=",">
+		        USE_YN = #USE_YN#
+		       </isNotEmpty>
+		       <isNotEmpty property="RP_CONTENTS" prepend=",">
+		        RP_CONTENTS = #RP_CONTENTS#
+		       </isNotEmpty>
+	       </isNotNull>
+	 WHERE RP_SEQ = #RP_SEQ# 		
+	</update>	
+	
+	<delete id="delBrd03" parameterClass="Map">
+		DELETE FROM tbrd03 WHERE RP_SEQ = #RP_SEQ#
+	</delete>
+	
+	<delete id="delBrd03BrdSeq" parameterClass="Map">
+		DELETE FROM tbrd03 WHERE BRD_SEQ = #BRD_SEQ#
+	</delete>	
+	
+	<insert id="insBrd02" parameterClass="Map">
+	INSERT 
+	  INTO tbrd02 
+	       ( 
+				BRD_SEQ, 
+				FILE_UUID, 
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #BRD_SEQ#, 
+	           #FILE_UUID#,
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>	
+	
+	<delete id="delBrd02" parameterClass="Map">
+		DELETE FROM tbrd02 WHERE FILE_UUID = #FILE_UUID#
+	</delete>	
+
+</sqlMap>

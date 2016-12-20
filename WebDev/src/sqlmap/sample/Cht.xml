@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="cht">
+
+	<select id="selEmpChart" resultClass="java.util.LinkedHashMap">
+		select ifnull(office.getCodeValue('CD002', USER_KINDCD), '미지정')AS USER_KINDCD, count(*)AS CNT   from temp01 group by USER_KINDCD
+	</select>
+	
+	<select id="selBrdChart01" resultClass="java.util.LinkedHashMap">
+		select office.getCodeValue('CD003', BRD_KINDCD)AS USER_KINDCD, count(*)AS CNT  from tbrd01 group by BRD_KINDCD
+	</select>	
+	
+	<select id="selBrdChart02" resultClass="java.util.LinkedHashMap">
+		select a.W_DATE, ifnull(b.CNT, 0)AS CNT
+		from(
+			select a.W_DATE 
+			from (
+			    select curdate() - INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY as W_DATE
+			    from (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as a
+			    cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as b
+			    cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as c
+			) a
+			where a.W_DATE between '2016-07-01' and '2016-07-31' 
+		)a LEFT OUTER JOIN
+		(
+		select 
+			DATE_FORMAT(ins_date, '%Y-%m-%d')AS W_DATE,
+			count(*)AS CNT  
+			from tbrd01 group by W_DATE
+		) b
+		on a.W_DATE = b.W_DATE
+		order by a.W_DATE	
+	</select>
+</sqlMap>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="lnt">
+
+	<select id="selLntDetail" resultClass="HashMap">
+		SELECT a.PGM_ID,
+		       a.PGM_URL,
+		       ifnull(b.LNT_NAME, '') AS LNT_NAME,
+		       ifnull(b.CONTENTS, '') AS CONTENTS,
+		       B.POS_X,
+		       B.POS_Y      
+		  FROM tpgm01 a LEFT OUTER JOIN tlnt01 b
+		  ON a.PGM_ID = b.PGM_ID
+		  WHERE 1=1 
+		  AND B.USE_YN = 'Y'
+		  <![CDATA[
+		  AND DATE_FORMAT(B.VW_ST_DAY, '%Y-%m-%d') <= now()
+		  AND DATE_FORMAT(B.VW_ED_DAY, '%Y-%m-%d') >= now()
+		  ]]> 
+		  AND A.PGM_URL = #PGM_URL#
+	</select>
+	
+	<select id="selPgmList" resultClass="HashMap">
+		SELECT a.PGM_ID, 
+		       a.PGM_NAME, 
+		       a.PGM_URL,
+		       b.USE_YN,
+		       ifnull(b.LNT_NAME, '') AS LNT_NAME,
+		       ifnull(b.CONTENTS, '') AS CONTENTS,
+		       IF(b.CONTENTS != '','Y','N') AS PROC_YN,
+		       B.POS_X,
+		       B.POS_Y,
+		       B.VW_ST_DAY,
+		       B.VW_ED_DAY      
+		  FROM tpgm01 a LEFT OUTER JOIN tlnt01 b
+		  ON a.PGM_ID = b.PGM_ID
+		  WHERE 1=1  
+	</select>	
+	
+	
+	<select id="selLntExist" resultClass="Integer">
+	SELECT count(*)
+	  FROM tlnt01 a
+	  WHERE a.PGM_ID = #PGM_ID#
+	</select>	
+	
+	<insert id="insLnt" parameterClass="Map">
+	INSERT 
+	  INTO tlnt01 
+	       ( 
+				PGM_ID,
+				LNT_NAME,
+				POS_X,
+				POS_Y,
+				USE_YN,
+				VW_ST_DAY,
+				VW_ED_DAY,
+				CONTENTS,
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #PGM_ID#, 
+	           #LNT_NAME#,
+	           #POS_X#,
+	           #POS_Y#,
+	           #USE_YN#,
+	           #VW_ST_DAY#,
+	           #VW_ED_DAY#,
+	           #CONTENTS#,
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>
+	
+	<update id="updLnt" parameterClass="Map">
+	UPDATE tlnt01 
+	       SET
+	       <isNotNull removeFirstPrepend="true">
+		       <isNotEmpty property="CONTENTS" prepend=",">
+		        CONTENTS = #CONTENTS#
+		       </isNotEmpty>
+		       <isNotEmpty property="LNT_NAME" prepend=",">
+		        LNT_NAME = #LNT_NAME#
+		       </isNotEmpty>	
+		       <isNotEmpty property="POS_X" prepend=",">
+		        POS_X = #POS_X#
+		       </isNotEmpty>
+		       <isNotEmpty property="POS_Y" prepend=",">
+		        POS_Y = #POS_Y#
+		       </isNotEmpty>
+		       <isNotEmpty property="USE_YN" prepend=",">
+		        USE_YN = #USE_YN#
+		       </isNotEmpty>		       
+		       <isNotEmpty property="VW_ST_DAY" prepend=",">
+		        VW_ST_DAY = #VW_ST_DAY#
+		       </isNotEmpty>
+		       <isNotEmpty property="VW_ED_DAY" prepend=",">
+		        VW_ED_DAY = #VW_ED_DAY#
+		       </isNotEmpty>
+	       </isNotNull>
+	 WHERE PGM_ID = #PGM_ID# 		
+	</update>			
+
+</sqlMap>

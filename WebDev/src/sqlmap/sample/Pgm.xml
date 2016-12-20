@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="pgm">
+	
+	<sql id="selPgmWhere">
+		<isNotEmpty property="PGM_ID" prepend="AND">
+			a.PGM_ID LIKE CONCAT('%',#PGM_ID#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="PGM_NAME" prepend="AND">
+			a.PGM_NAME LIKE CONCAT('%',#PGM_NAME#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="PGM_URL" prepend="AND">
+			a.PGM_URL = #PGM_URL#
+		</isNotEmpty>		
+	</sql>	
+	
+	<select id="selPgmList" resultClass="HashMap">
+	SELECT a.PGM_ID, 
+	       a.PGM_NAME, 
+	       a.PGM_URL,
+	       a.USE_YN, 
+	       DATE_FORMAT(INS_DATE, '%Y-%m-%d') AS INS_DATE,
+	       a.INS_ID 
+	  FROM tpgm01 a
+	  WHERE 1=1
+	  <include refid="selPgmWhere"/>
+	</select>
+	
+	<select id="selPgmExist" resultClass="Integer">
+	SELECT count(*)
+	  FROM tpgm01 a
+	  WHERE a.PGM_ID = #PGM_ID#
+	</select>
+	
+	<insert id="insPgm" parameterClass="Map">
+	INSERT 
+	  INTO tpgm01 
+	       ( 
+				PGM_ID, 
+				PGM_NAME, 
+				PGM_URL, 
+				PARENTS_ID, 
+				ORDER_SEQ,
+				USE_YN,
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #PGM_ID#, 
+	           #PGM_NAME#, 
+	           #PGM_URL#, 
+	           #PARENTS_ID#, 
+	           #ORDER_SEQ#,
+	           #USE_YN#,
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>
+	
+	<update id="updPgm" parameterClass="Map">
+	UPDATE tpgm01 
+	       SET
+	       <isNotNull removeFirstPrepend="true">
+		       <isNotEmpty property="PGM_NAME" prepend=",">
+		        PGM_NAME = #PGM_NAME#
+		       </isNotEmpty>
+		       <isNotEmpty property="PGM_URL" prepend=",">
+		        PGM_URL = #PGM_URL#
+		       </isNotEmpty>
+		       <isNotEmpty property="PARENTS_ID" prepend=",">
+		        PARENTS_ID = #PARENTS_ID#
+		       </isNotEmpty>
+		       <isNotEmpty property="ORDER_SEQ" prepend=",">
+		        ORDER_SEQ = #ORDER_SEQ#
+		       </isNotEmpty>
+		       <isNotEmpty property="USE_YN" prepend=",">
+		        USE_YN = #USE_YN#
+		       </isNotEmpty>		       		       			
+	       </isNotNull>
+	 WHERE PGM_ID = #PGM_ID# 		
+	</update>
+	
+	<delete id="delPgm" parameterClass="Map">
+		DELETE FROM tpgm01 WHERE PGM_ID = #PGM_ID#
+	</delete>
+
+</sqlMap>

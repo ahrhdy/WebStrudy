@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ufm">
+
+	<sql id="selUfmWhere">
+		<isNotEmpty property="FILE_UUID" prepend="AND">
+			FILE_UUID LIKE CONCAT('%',#FILE_UUID#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="FILE_ORI_NAME" prepend="AND">
+			FILE_ORI_NAME LIKE CONCAT('%',#FILE_ORI_NAME#,'%')
+		</isNotEmpty>			
+	</sql>
+	
+	<select id="selUfmPaging" resultClass="HashMap">
+		SELECT  UFM_SEQ,
+				FILE_UUID,
+				FILE_ORI_NAME,
+				FILE_SIZE,
+				FILE_PATH,
+				DATE_FORMAT(INS_DATE, '%Y-%m-%d') AS INS_DATE,
+				INS_ID      
+		  FROM tufm01
+		  WHERE 1=1
+		  <include refid="selUfmWhere"/>
+	</select>
+	
+	<select id="selUfmPagingCount" resultClass="Integer">
+		SELECT  COUNT(*)     
+		  FROM tufm01
+		  WHERE 1=1
+		  <include refid="selUfmWhere"/>
+	</select>		
+	
+	<select id="selUfmList" resultClass="HashMap">
+		SELECT  UFM_SEQ,
+				FILE_UUID,
+				FILE_ORI_NAME,
+				FILE_SIZE,
+				FILE_PATH,
+				INS_DATE, 
+				INS_ID      
+		  FROM tufm01
+	</select>
+	
+	<select id="selUfmDetail" resultClass="HashMap">
+		SELECT  UFM_SEQ,
+				FILE_UUID,
+				FILE_ORI_NAME,
+				FILE_SIZE,
+				FILE_PATH,
+				INS_DATE, 
+				INS_ID      
+		  FROM tufm01
+		  WHERE FILE_UUID = #FILE_UUID#
+	</select>
+	
+	<insert id="insUfm" parameterClass="Map">
+	INSERT 
+	  INTO tufm01 
+	       ( 
+				FILE_UUID,
+				FILE_ORI_NAME,
+				FILE_SIZE,
+				FILE_PATH,
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #SAVE_FILE_NAME#, 
+	           #ORG_FILE_NAME#,
+	           #FILE_SIZE#,
+	           #FILE_PATH#,
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>
+	
+	<delete id="delUfm" parameterClass="Map">
+		DELETE FROM tufm01 WHERE FILE_UUID = #FILE_UUID#
+	</delete>	
+	
+	<select id="selUfmScheduleList" resultClass="HashMap">
+		SELECT  FILE_UUID,
+				FILE_ORI_NAME,
+				FILE_SIZE,
+				FILE_PATH,
+				DATE_FORMAT(INS_DATE, '%Y-%m-%d %H:%i:%s') AS INS_DATE, 
+				INS_ID      
+		  FROM tufm02
+	</select>	
+	
+	<insert id="insUfmSchedule" parameterClass="Map">
+	INSERT 
+	  INTO tufm02 
+	       ( 
+				FILE_UUID,
+				FILE_ORI_NAME,
+				FILE_SIZE,
+				FILE_PATH,
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #FILE_UUID#, 
+	           #FILE_ORI_NAME#,
+	           #FILE_SIZE#,
+	           #FILE_PATH#,
+	           now(),
+	           'SYSTEM' 
+	       ) 	
+	</insert>	
+	
+	<delete id="delUfmSchedule" parameterClass="Map">
+		DELETE FROM tufm02
+	</delete>	
+			
+
+</sqlMap>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="err">
+
+	<sql id="selErrListWhere">
+		<isNotEmpty property="ERR_URL" prepend="AND">
+			a.ERR_URL LIKE CONCAT('%',#ERR_URL#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="ERR_CONTENTS" prepend="AND">
+			a.ERR_CONTENTS LIKE CONCAT('%',#ERR_CONTENTS#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="ERR_KINDCD" prepend="AND">
+			a.ERR_KINDCD = #ERR_KINDCD#
+		</isNotEmpty>
+		<isNotEmpty property="PROC_YN" prepend="AND">
+			IF(ERR_REPLY != '','Y','N') = #PROC_YN#
+		</isNotEmpty>	
+	</sql>
+	
+	<select id="selErrList" resultClass="HashMap">
+		SELECT ERR_SEQ,
+		       ERR_URL,
+		       ERR_KINDCD,
+		       office.getCodeValue('CD001',ERR_KINDCD)AS ERR_KINDVAL,
+		       FILE_UUID,
+		       left(ERR_CONTENTS, 12)AS DISP_CONTENTS,
+		       ERR_CONTENTS,
+		       ERR_REPLY,
+		       DATE_FORMAT(INS_DATE, '%Y-%m-%d') AS INS_DATE,
+		       INS_ID,
+		       REPLY_ID
+		  FROM terr01 a
+		  WHERE 1=1
+		  <include refid="selErrListWhere"/>
+	</select>
+	
+	<select id="selErrListCount" resultClass="Integer">
+		SELECT COUNT(*)AS CNT
+		  FROM terr01 a
+		  WHERE 1=1	
+		  <include refid="selErrListWhere"/>
+	</select>
+	
+	<insert id="insErr" parameterClass="Map">
+	INSERT 
+	  INTO terr01 
+	       ( 
+				ERR_URL, 
+				ERR_KINDCD,
+				ERR_CONTENTS,
+				FILE_UUID,
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #ERR_URL#, 
+	           #ERR_KINDCD#,
+	           #ERR_CONTENTS#,
+	           #FILE_UUID#,
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>
+	
+	<update id="updErr" parameterClass="Map">
+	UPDATE terr01 
+	       SET
+		   ERR_REPLY = #ERR_REPLY#
+	       ,REPLY_ID = #SS_USER_ID#
+	 WHERE ERR_SEQ = #ERR_SEQ# 		
+	</update>			
+
+</sqlMap>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+		
+	<!-- ############ AOP ############ -->
+	<aop:aspectj-autoproxy />
+	<bean id="performanceTrace" class="com.framework.spring.common.aop.PerformanceTraceAdvice" />
+
+	<aop:config>	 
+		<!-- 포퍼먼스 측정용 사용지 주석제거 * 사용시 트랜젝션이 먹지 않는 문제 있음 -->	
+<!-- 		<aop:aspect id="traceAspect" ref="performanceTrace"> -->
+<!-- 			<aop:pointcut id="publicMethod" -->
+<!-- 				expression="execution(public * spring.work..*(..))" /> -->
+<!-- 			<aop:around method="trace" pointcut-ref="publicMethod" /> -->
+<!-- 		</aop:aspect> -->
+	</aop:config>
+	
+
+	<!-- ############ iBatis Config ############ -->
+	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation" value="classpath:sqlmap/SqlMapConfig.xml" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="sqlMapClientTemplate" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+
+	<!-- ############ cofig.properties ############ -->
+	<util:properties id="config" location="classpath:com/framework/spring/common/prop/config.properties" />   
+
+	<!-- ############ File Repository ############ -->
+	<bean id="repository" class="com.framework.spring.common.file.FileRepository">
+		<property name="path" value="#{config['spring.repository']}" />
+		<property name="editorPath" value="#{config['spring.editor.repository']}" />
+		<property name="capturePath" value="#{config['spring.capture.repository']}" />
+		<property name="pdfPath" value="#{config['spring.pdf.repository']}" />
+	</bean>
+	
+	<!-- ############ PDF Util ############ -->
+	<bean id="pdfUtil" class="com.framework.spring.common.file.PdfUtil" />
+
+
+</beans>

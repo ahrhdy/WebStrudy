@@ -1,0 +1,40 @@
+.fl{float:left;}
+.fr{float:right;}
+
+.layer{
+	background-color:#ffffff;
+	padding:10px 10px 10px 10px;
+	border : 5px solid #98bf21;
+	z-index:1000;
+}
+.opacity60{
+	opacity : 0.6;
+	filter: alpha(opacity=60);
+	-moz-opacity:0.6;
+	-khtml-opacity: 0.6;
+}
+.opacity20{
+	opacity : 0.2;
+	filter: alpha(opacity=20);
+	-moz-opacity:0.2;
+	-khtml-opacity: 0.2;
+}
+.word-wrap{
+	word-wrap: break-word; /* Internet Explorer 5.5+ */
+	white-space: pre-wrap; /* css-3 */
+	white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+	white-space: -pre-wrap; /* Opera 4-6 */
+	white-space: -o-pre-wrap; /* Opera 7 */
+	word-break:break-all;
+}
+
+.border-rad{
+	border-top-left-radius: 2em;
+	border-top-right-radius: 0em;
+	border-bottom-right-radius: 0em;
+	border-bottom-left-radius: 0em
+}
+
+.curser-pointer{
+	cursor: pointer;
+}

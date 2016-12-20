@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="hlp">
+
+	<select id="selHlpList" resultClass="HashMap">
+		SELECT ifnull(b.CONTENTS, '') AS CONTENTS      
+		  FROM tpgm01 a LEFT OUTER JOIN thlp01 b
+		  ON a.PGM_ID = b.PGM_ID
+		  WHERE a.PGM_URL LIKE CONCAT(#PGM_URL#,'%')
+	</select>
+	
+	<select id="selPgmList" resultClass="HashMap">
+		SELECT a.PGM_ID, 
+		       a.PGM_NAME, 
+		       a.PGM_URL,
+		       a.USE_YN,
+		       ifnull(b.CONTENTS, '') AS CONTENTS,
+		       CASE WHEN ifnull(b.PGM_ID,'N') = 'N' THEN 'N'
+		       ELSE 'Y' END PGM_YN	       
+		  FROM tpgm01 a LEFT OUTER JOIN thlp01 b
+		  ON a.PGM_ID = b.PGM_ID
+		  WHERE 1=1
+		<isNotEmpty property="PGM_ID" prepend="AND">
+			a.PGM_ID = #PGM_ID#
+		</isNotEmpty>
+		<isNotEmpty property="PGM_URL" prepend="AND">
+			a.PGM_URL = #PGM_URL#
+		</isNotEmpty>	  	  
+	</select>	
+	
+	
+	<select id="selHlpExist" resultClass="Integer">
+	SELECT count(*)
+	  FROM thlp01 a
+	  WHERE a.PGM_ID = #PGM_ID#
+	</select>	
+	
+	<insert id="insHlp" parameterClass="Map">
+	INSERT 
+	  INTO thlp01 
+	       ( 
+				PGM_ID, 
+				CONTENTS,
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #PGM_ID#, 
+	           #CONTENTS#,
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>
+	
+	<update id="updHlp" parameterClass="Map">
+	UPDATE thlp01 
+	       SET
+	       <isNotNull removeFirstPrepend="true">
+		       <isNotEmpty property="CONTENTS" prepend=",">
+		        CONTENTS = #CONTENTS#
+		       </isNotEmpty>	       		       			
+	       </isNotNull>
+	 WHERE PGM_ID = #PGM_ID# 		
+	</update>			
+
+</sqlMap>

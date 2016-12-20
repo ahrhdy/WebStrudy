@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="cde">
+	
+	<sql id="selCodeWhere">
+		<isNotEmpty property="CD_SEC" prepend="AND">
+			a.CD_SEC LIKE CONCAT('%',#CD_SEC#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="CD_SEC_NAME" prepend="AND">
+			a.CD_SEC_NAME LIKE CONCAT('%',#CD_SEC_NAME#,'%')
+		</isNotEmpty>			
+	</sql>	
+	
+	<select id="selCodeList" resultClass="HashMap">
+	SELECT a.CD_SEC, 
+	       a.CD_SEC_NAME, 
+	       a.CD_SEC_DESC, 
+	       DATE_FORMAT(a.INS_DATE, '%Y-%m-%d') AS INS_DATE,
+	       a.INS_ID 
+	  FROM tcde01 a
+	  WHERE 1=1
+	  <include refid="selCodeWhere"/>
+	</select>
+	
+	<select id="selCodeExist" resultClass="Integer">
+	SELECT count(*)
+	  FROM tcde01 a
+	  WHERE a.CD_SEC = #CD_SEC#
+	</select>
+	
+	<insert id="insCode" parameterClass="Map">
+	INSERT 
+	  INTO tcde01 
+	       ( 
+				CD_SEC, 
+				CD_SEC_NAME, 
+				CD_SEC_DESC,
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #CD_SEC#, 
+	           #CD_SEC_NAME#, 
+	           #CD_SEC_DESC#,
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>
+	
+	<update id="updCode" parameterClass="Map">
+	UPDATE tcde01 
+	       SET
+	       <isNotNull removeFirstPrepend="true">
+		       <isNotEmpty property="CD_SEC" prepend=",">
+		       	CD_SEC = #CD_SEC#
+		       </isNotEmpty> 
+		       <isNotEmpty property="CD_SEC_NAME" prepend=",">
+		        CD_SEC_NAME = #CD_SEC_NAME#
+		       </isNotEmpty>
+		       <isNotEmpty property="CD_SEC_DESC" prepend=",">
+		        CD_SEC_DESC = #CD_SEC_DESC#
+		       </isNotEmpty>				
+	       </isNotNull>
+	 WHERE CD_SEC = #CD_SEC# 		
+	</update>
+	
+	<delete id="delCode" parameterClass="Map">
+		DELETE FROM tcde01 WHERE CD_SEC = #CD_SEC#
+	</delete>
+	
+	
+	
+	<sql id="selCodeDetailWhere">
+		<isNotEmpty property="CD_SEC" prepend="AND">
+			a.CD_SEC LIKE CONCAT('%',#CD_SEC#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="CD_KEY" prepend="AND">
+			a.CD_KEY LIKE CONCAT('%',#CD_KEY#,'%')
+		</isNotEmpty>	
+		<isNotEmpty property="CD_VALUE" prepend="AND">
+			a.CD_VALUE LIKE CONCAT('%',#CD_VALUE#,'%')
+		</isNotEmpty>					
+	</sql>	
+	
+	<select id="selCodeDetailList" resultClass="HashMap">
+	SELECT a.CD_SEC, 
+	       a.CD_KEY, 
+	       a.CD_VALUE,
+	       a.CD_DESC, 
+	       DATE_FORMAT(a.INS_DATE, '%Y-%m-%d') AS INS_DATE,
+	       a.INS_ID 
+	  FROM tcde02 a
+	  WHERE 1=1
+	  <include refid="selCodeDetailWhere"/>
+	</select>
+	
+	<select id="selCodeDetailExist" resultClass="Integer">
+	SELECT count(*)
+	  FROM tcde02 a
+	  WHERE a.CD_SEC = #CD_SEC#
+	  AND a.CD_KEY = #CD_KEY#
+	</select>
+	
+	<insert id="insCodeDetail" parameterClass="Map">
+	INSERT 
+	  INTO tcde02 
+	       ( 
+				CD_SEC, 
+				CD_KEY, 
+				CD_VALUE,
+				CD_DESC,
+				INS_DATE, 
+				INS_ID 
+	       ) 
+	       VALUES 
+	       ( 
+	           #CD_SEC#, 
+	           #CD_KEY#, 
+	           #CD_VALUE#,
+	           #CD_DESC#,
+	           now(),
+	           #SS_USER_ID# 
+	       ) 	
+	</insert>
+	
+	<update id="updCodeDetail" parameterClass="Map">
+	UPDATE tcde02 
+	       SET
+	       <isNotNull removeFirstPrepend="true">
+		       <isNotEmpty property="CD_SEC" prepend=",">
+		       	CD_SEC = #CD_SEC#
+		       </isNotEmpty> 
+		       <isNotEmpty property="CD_KEY" prepend=",">
+		        CD_KEY = #CD_KEY#
+		       </isNotEmpty>
+		       <isNotEmpty property="CD_VALUE" prepend=",">
+		        CD_VALUE = #CD_VALUE#
+		       </isNotEmpty>		       
+		       <isNotEmpty property="CD_DESC" prepend=",">
+		        CD_DESC = #CD_DESC#
+		       </isNotEmpty>				
+	       </isNotNull>
+	 WHERE CD_SEC = #CD_SEC# 
+	 AND CD_KEY = #CD_KEY#		
+	</update>
+	
+	<delete id="delCodeDetail" parameterClass="Map">
+		DELETE FROM tcde02 
+		WHERE CD_SEC = #CD_SEC#
+		AND CD_KEY = #CD_KEY#
+	</delete>	
+
+</sqlMap>
