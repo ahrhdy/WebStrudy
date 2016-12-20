@@ -11,6 +11,7 @@ var COL_LEFT_TAG = "{",	//그리드 생성시 컬럼의 시작 태그
 	IFRM_PDFVIWER_ID = "iFrmPdfView",//iframe PDF 뷰어 ID
 	DAUM_MAP_API_KEY = "3fca7a84d691d1805b09042e80b8eda6";
 
+
 $(document).ready(function(){
 	initLogDisplay(); // log 창 초기화
 	initjqDatePicker(); //jquery datepicker input스캔	
